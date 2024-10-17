@@ -23,25 +23,47 @@ public class MyBot : IChessBot
 
     public Move Think(Board board, Timer timer)
     {
-        Console.WriteLine("[{0}]", string.Join(", ", board.GetLegalMoves()));
-        return Search(board);
+        return Search(board, 4);
     }
 
-    public Move Search(Board board){
+    public Move Search(Board board, int depth){
         MoveEval? moveEval = null;
 
         foreach (var move in board.GetLegalMoves())
         {
             board.MakeMove(move);
-            float eval = Evaluate(board) * (board.IsWhiteToMove ? -1 : 1);
-            ConsoleHelper.Log($"{move}: {eval}", col: ConsoleColor.Cyan);
-            if (moveEval == null || eval >= moveEval.eval)
+            float eval = -DeepSearch(board, depth - 1);
+            if (
+                moveEval == null || // If first accurance 
+                (board.IsWhiteToMove && eval >= moveEval.eval) || // Or more, if playing white 
+                (!board.IsWhiteToMove && eval <= moveEval.eval)) // Or less, if playing black
             {
-                moveEval = new MoveEval(move, eval);
+                moveEval = new MoveEval(move, eval); // update the move
             }
             board.UndoMove(move);
         }
         return moveEval.move;
+    }
+
+    public float DeepSearch(Board board, int depth){
+        if (depth == 0) {
+            return Evaluate(board);
+        }
+
+        float bestEval = board.IsWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity;
+        foreach (var move in board.GetLegalMoves())
+        {
+            board.MakeMove(move);
+            float eval = DeepSearch(board, depth - 1);
+            board.UndoMove(move);
+            if (board.IsWhiteToMove)
+            {
+                bestEval = Math.Max(bestEval, eval);
+            } else {
+                bestEval = Math.Min(bestEval, eval);
+            }
+        }
+        return bestEval;
     }
 
     public float Evaluate(Board board) {
