@@ -32,7 +32,6 @@ public class MyBot : IChessBot
 
         foreach (var move in board.GetLegalMoves())
         {
-            ConsoleHelper.Log(move.ToString(), col: ConsoleColor.Cyan);
             board.MakeMove(move);
             float eval = Evaluate(board) * (board.IsWhiteToMove ? -1 : 1);
             ConsoleHelper.Log($"{move}: {eval}", col: ConsoleColor.Cyan);
@@ -42,9 +41,6 @@ public class MyBot : IChessBot
             }
             board.UndoMove(move);
         }
-        ConsoleHelper.Log("------------", col: ConsoleColor.Cyan);
-        ConsoleHelper.Log($"Best move: {moveEval.move} - {moveEval.eval}", col: ConsoleColor.Cyan);
-        ConsoleHelper.Log("------------", col: ConsoleColor.Cyan);
         return moveEval.move;
     }
 
