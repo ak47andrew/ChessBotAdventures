@@ -5,12 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Current File",
+            "name": "UCI",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/chess_cs/Chess-Challenge/bin/Debug/net6.0/Chess-Challenge.dll",
+            "args": ["uci", "MyBot"],
+            "cwd": "${workspaceFolder}/chess_cs",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Python UCI",
             "type": "debugpy",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/python_test",
+            "cwd": "${workspaceFolder}/python_games"
         },
         {
             "name": "GUI",

@@ -11,20 +11,25 @@ myBot_wins = 0
 evilBot_wins = 0
 draws = 0
 
+def get_random_fen():
+    with open("Fens.txt") as f:
+        fens = f.readlines()
+        return random.choice(fens).strip()
+
 def total_games():
     return myBot_wins + evilBot_wins + draws
 
-def setup_game(white: chess.engine.SimpleEngine):
-    game = chess.pgn.Game()
+def setup_game(white: chess.engine.SimpleEngine, board: chess.Board):
+    game = chess.pgn.Game.from_board(board)
     game.headers["Event"] = "Playing back and forth"
     game.headers["Date"] = str(datetime.datetime.now())
     game.headers["Site"] = "localhost"
     game.headers["White"] = "MyBot" if white == myBot else "EvilBot"
     game.headers["Black"] = "EvilBot" if white == myBot else "MyBot"
-    game.headers["Round"] = total_games() + 1
+    game.headers["Round"] = str(total_games() + 1)
     game.headers["Result"] = "*"
-    # game.headers["FEN"] = fen
-    # game.headers["SetUp"] = "1"
+    game.headers["FEN"] = board.fen()
+    game.headers["SetUp"] = "1"
     return game
 
 def finish_game(game: chess.pgn.Game, winner: chess.engine.SimpleEngine):
@@ -44,15 +49,19 @@ def finish_game(game: chess.pgn.Game, winner: chess.engine.SimpleEngine):
 
 def run_game():
     global myBot_wins, evilBot_wins, draws
-    board = chess.Board()
+    board = chess.Board(get_random_fen())
     limit = chess.engine.Limit()
     side = myBot if total_games() % 2 == 1 else evilBot
-    game = setup_game(side)
+    game = setup_game(side, board)
     node = game
     
     while not board.is_game_over():
         side = evilBot if side == myBot else myBot
         res = side.play(board, limit)
+        if res.move is None:  # Just in case. Probably will never happen
+            print("res.move is None")
+            side = evilBot if side == myBot else myBot
+            break
         board.push(res.move)
         node = node.add_variation(res.move)
         print(f"[{datetime.datetime.now()}] {"MyBot" if side == myBot else "EvilBot"} played {res.move}")
