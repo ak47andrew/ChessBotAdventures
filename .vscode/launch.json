@@ -18,7 +18,7 @@
             "name": "Python UCI",
             "type": "debugpy",
             "request": "launch",
-            "program": "main.py",
+            "program": "tournament.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/python_games"
         },

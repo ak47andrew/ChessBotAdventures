@@ -13,16 +13,13 @@ namespace ChessChallenge.UCI
         IChessBot bot;
         ChallengeController.PlayerType type;
         Chess.Board board;
-        APIMoveGen moveGen;
         static readonly string fenRegex = @"fen\s+([rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\/[rnbqkpRNBQKP1-8]+\s+\w\s(?:\w+|-)\s(?:\w+|-)\s\d+\s\d+|startpos)";
         static readonly string movesRegex = @"moves\s+(\w+(?:\s+\w+)*)";
-
 
 		public UCIBot(IChessBot bot, ChallengeController.PlayerType type)
         {
             this.bot = bot;
             this.type = type;
-            moveGen = new APIMoveGen();
             board = new Chess.Board();
         }
 
@@ -52,40 +49,6 @@ namespace ChessChallenge.UCI
                     board.MakeMove(new Chess.Move(move.RawValue), false);
                 }
             }
-
-            // TODO: rewrite this in the morning
-            // int idx = Array.FindIndex(args, x => x == "moves");
-            // if (idx == -1)
-            // {
-            //     if (args[1] == "startpos")
-            //     {
-            //         board.LoadStartPosition();
-            //     }
-            //     else
-            //     {
-            //         board.LoadPosition(String.Join(" ", args.AsSpan(2, args.Length - 2).ToArray()));
-            //     }
-            // }
-            // else
-            // {
-            //     if (args[1] == "startpos")
-			// 	{
-			// 		board.LoadStartPosition();
-			// 	}
-            //     else
-			// 	{
-			// 		board.LoadPosition(String.Join(" ", args.AsSpan(1, idx - 1).ToArray()));
-			// 	}
-
-            //     for (int i = idx + 1; i < args.Length; i++)
-            //     {
-            //         // this is such a hack
-            //         API.Move move = new API.Move(args[i], new API.Board(board));
-            //         board.MakeMove(new Chess.Move(move.RawValue), false);
-            //     }
-            // }
-
-            // string fen = FenUtility.CurrentFen(board);
         }
 
         void GoCommand(string[] args)
