@@ -38,14 +38,14 @@ class Pair:
             self.white = two
             self.black = one
     
-    def side(self):
-        try:
-            if self.white_to_move:
-                return self.white
-            else:
-                return self.black
-        finally:
-            self.white_to_move = not self.white_to_move
+    def turn(self):
+        self.white_to_move = not self.white_to_move
+            
+    def get_side(self):
+        return self.white if self.white_to_move else self.black
+    
+    def get_not_side(self):
+        return self.black if self.white_to_move else self.white
 
 
 engines_names = ["MyBot", "EvilBot"]
@@ -64,7 +64,7 @@ def setup_game(pair: Pair, board: chess.Board):
     game.headers["Site"] = "localhost"
     game.headers["White"] = pair.white.name
     game.headers["Black"] = pair.black.name
-    game.headers["Round"] = str(round)
+    game.headers["Round"] = str(rounds)
     game.headers["Result"] = "*"
     game.headers["FEN"] = board.fen()
     game.headers["SetUp"] = "1"
@@ -93,25 +93,26 @@ def run_game(pair: Pair):
     node = game
     
     while not board.is_game_over():
-        side = pair.side()
-        res = side.engine.play(board, limit)
+        side = pair.turn()
+        res = pair.get_side().engine.play(board, limit)
         if res.move is None:  # Just in case. Probably will never happen
             print("res.move is None")
-            pair.side()
+            pair.turn()
             break
         board.push(res.move)
         node = node.add_variation(res.move)
-        print(f"[{datetime.datetime.now()}] {side.name} played {res.move}")
+        print(f"[{datetime.datetime.now()}] {pair.get_side().name} played {res.move}")
 
     node.end()
     
     if board.is_checkmate():  # Current side wins
-        side.wins += 1
+        pair.get_side().wins += 1
+        pair.get_not_side().losses += 1
     else:
         pair.white.draws += 1
         pair.black.draws += 1
     
-    game = finish_game(game, side)
+    game = finish_game(game, pair.get_side())
     
     with open("game.pgn", "a") as f:
         f.write(str(game) + "\n\n")
@@ -124,5 +125,6 @@ def run_game(pair: Pair):
 while True:
     try:
         run_game(Pair(*engines))
+        rounds += 1
     except KeyboardInterrupt:
         exit()
