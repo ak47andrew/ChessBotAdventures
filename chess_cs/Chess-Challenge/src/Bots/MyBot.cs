@@ -1,23 +1,21 @@
 ﻿using System;
 using ChessChallenge.API;
-using ChessChallenge.Application;
 
-
-public class MoveEval
-{
-    public Move move;
-    public float eval;
-
-    public MoveEval(Move move, float eval)
-    {
-        this.move = move;
-        this.eval = eval;
-    }
-}
-
+namespace ChessChallenge.Bots;
 
 public class MyBot : IChessBot
 {
+    public class MoveEval
+    {
+        public Move move;
+        public float eval;
+
+        public MoveEval(Move move, float eval)
+        {
+            this.move = move;
+            this.eval = eval;
+        }
+    }
 
     static Random rnd = new Random();
 
