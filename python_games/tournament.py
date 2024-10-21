@@ -73,14 +73,14 @@ def setup_game(pair: Pair, board: chess.Board):
 def finish_game(game: chess.pgn.Game, winner: Engine):
     # Check winner side
     if winner is None:
-        game.headers["Result"] = "1/2 - 1/2"
+        game.headers["Result"] = "1/2-1/2"
     else:
         white_wins = True if winner.name == game.headers["White"] else False
         
         if white_wins:
-            game.headers["Result"] = "1 - 0"
+            game.headers["Result"] = "1-0"
         else:
-            game.headers["Result"] = "0 - 1"
+            game.headers["Result"] = "0-1"
         
     return game
 
@@ -93,7 +93,6 @@ def run_game(pair: Pair):
     node = game
     
     while not board.is_game_over():
-        side = pair.turn()
         res = pair.get_side().engine.play(board, limit)
         if res.move is None:  # Just in case. Probably will never happen
             print("res.move is None")
@@ -102,7 +101,9 @@ def run_game(pair: Pair):
         board.push(res.move)
         node = node.add_variation(res.move)
         print(f"[{datetime.datetime.now()}] {pair.get_side().name} played {res.move}")
-
+        pair.turn()
+        
+    pair.turn()
     node.end()
     
     if board.is_checkmate():  # Current side wins
