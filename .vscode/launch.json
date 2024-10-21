@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/chess_cs/Chess-Challenge/bin/Debug/net6.0/Chess-Challenge.dll",
-            "args": ["uci", "MyBot"],
+            "args": ["uci", "KingGambotIV"],
             "cwd": "${workspaceFolder}/chess_cs",
             "stopAtEntry": false,
             "console": "internalConsole"

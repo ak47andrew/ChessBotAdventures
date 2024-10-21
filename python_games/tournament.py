@@ -48,7 +48,7 @@ class Pair:
         return self.black if self.white_to_move else self.white
 
 
-engines_names = ["MyBot", "EvilBot"]
+engines_names = ["HopeBot", "EvilBot"]
 engines = [Engine(i) for i in engines_names]
 rounds = 1
 

@@ -53,7 +53,7 @@ namespace ChessChallenge.UCI
 
         void GoCommand(string[] args)
         {
-            int wtime = 0, btime = 0;
+            int wtime = int.MinValue, btime = int.MinValue;
             API.Board apiBoard = new API.Board(board);
             for (int i = 0; i < args.Length; i++)
             {
@@ -66,6 +66,14 @@ namespace ChessChallenge.UCI
                     btime = Int32.Parse(args[i + 1]);
                 }
             }
+            
+            if (wtime == int.MinValue){
+                wtime = 60 * 1000;
+            }
+            if (btime == int.MinValue){
+                btime = 60 * 1000;
+            }
+
             if (!apiBoard.IsWhiteToMove)
             {
                 int tmp = wtime;

@@ -48,7 +48,7 @@ using static System.Math;
 //      tuned with datasets generated from self play (of a prior version based on my public general tuned PSTs) and
 //      two publicly available datasets, lichess-big3-resolved and the zurichess quiet-labeled v7 dataset.
 
-public class KingGᴀᴍʙᴏᴛIV : IChessBot
+public class KingGambotIV : IChessBot
 {
     private (ulong, Move, short, byte, sbyte)[] tt = new (ulong, Move, short, byte, sbyte)[0x80_0000];
 

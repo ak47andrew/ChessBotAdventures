@@ -19,7 +19,13 @@ namespace ChessChallenge.Application
         {
             Human,
             MyBot,
-            EvilBot
+            EvilBot,
+            HopeBot,
+            Igris,
+            KingGambotIV,
+            LordChesterofPly5,
+            lowEloBrain,
+            MaxMaxBot
         }
 
         // Game state
@@ -53,14 +59,11 @@ namespace ChessChallenge.Application
         // Other
         readonly BoardUI boardUI;
         readonly MoveGenerator moveGenerator;
-        readonly int tokenCount;
-        readonly int debugTokenCount;
         readonly StringBuilder pgns;
 
         public ChallengeController()
         {
             Log($"Launching Chess-Challenge version {Settings.Version}");
-            (tokenCount, debugTokenCount) = GetTokenCount();
             Warmer.Warm();
 
             rng = new Random();
@@ -73,7 +76,7 @@ namespace ChessChallenge.Application
             BotStatsB = new BotMatchStats("IBot");
             UpdateBotMatchStartFens(defaultFenFile);
             botTaskWaitHandle = new AutoResetEvent(false);
-            StartNewGame(PlayerType.Human, PlayerType.MyBot);
+            StartNewGame(PlayerType.Human, PlayerType.KingGambotIV);
         }
 
         public void UpdateBotMatchStartFens(string fenFile)
@@ -216,6 +219,12 @@ namespace ChessChallenge.Application
             {
                 PlayerType.MyBot => new ChessPlayer(new MyBot(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
+                PlayerType.HopeBot => new ChessPlayer(new HopeBot(), type, GameDurationMilliseconds),
+                PlayerType.Igris => new ChessPlayer(new Igris(), type, GameDurationMilliseconds),
+                PlayerType.KingGambotIV => new ChessPlayer(new KingGambotIV(), type, GameDurationMilliseconds),
+                PlayerType.LordChesterofPly5 => new ChessPlayer(new LordChesterofPly5(), type, GameDurationMilliseconds),
+                PlayerType.lowEloBrain => new ChessPlayer(new lowEloBrain(), type, GameDurationMilliseconds),
+                PlayerType.MaxMaxBot => new ChessPlayer(new MaxMaxBot(), type, GameDurationMilliseconds),
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
         }
@@ -225,17 +234,14 @@ namespace ChessChallenge.Application
             {
                 PlayerType.MyBot => new MyBot(),
                 PlayerType.EvilBot => new EvilBot(),
+                PlayerType.HopeBot => new HopeBot(),
+                PlayerType.Igris => new Igris(),
+                PlayerType.KingGambotIV => new KingGambotIV(),
+                PlayerType.LordChesterofPly5 => new LordChesterofPly5(),
+                PlayerType.lowEloBrain => new lowEloBrain(),
+                PlayerType.MaxMaxBot => new MaxMaxBot(),
                 _ => null
             };
-        }
-
-        static (int totalTokenCount, int debugTokenCount) GetTokenCount()
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot", "MyBot.cs");
-
-            using StreamReader reader = new(path);
-            string txt = reader.ReadToEnd();
-            return TokenCounter.CountTokens(txt);
         }
 
         void OnMoveChosen(Move chosenMove)
