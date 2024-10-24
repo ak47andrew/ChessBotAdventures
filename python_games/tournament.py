@@ -48,7 +48,7 @@ class Pair:
         return self.black if self.white_to_move else self.white
 
 
-engines_names = ["HopeBot", "EvilBot"]
+engines_names = ["HopeBot", "EvilBot"]  # TODO move to database
 engines = [Engine(i) for i in engines_names]
 rounds = 1
 
@@ -123,7 +123,7 @@ def run_game(pair: Pair):
     print(f"[{datetime.datetime.now()}] {pair.black.name}: {pair.black.wins}+ {pair.black.draws}= {pair.black.losses}-")
     print("----------------------------------------------------------------\n\n")
 
-while True:
+while True:  # TODO run games for all bots (!) and in parallel (?)
     try:
         run_game(Pair(*engines))
         rounds += 1

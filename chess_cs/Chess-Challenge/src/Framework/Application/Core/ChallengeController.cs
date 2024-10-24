@@ -28,13 +28,15 @@ namespace ChessChallenge.Application
             MaxMaxBot
         }
 
+        public PlayerType[] allBots = {PlayerType.Human, PlayerType.MyBot, PlayerType.EvilBot, PlayerType.HopeBot, PlayerType.Igris, 
+                                        PlayerType.KingGambotIV, PlayerType.LordChesterofPly5, PlayerType.lowEloBrain, PlayerType.MaxMaxBot};
         // Game state
         readonly Random rng;
         int gameID;
-        bool isPlaying;
+        public bool isPlaying;
         Board board;
-        public ChessPlayer PlayerWhite { get; private set; }
-        public ChessPlayer PlayerBlack {get;private set;}
+        public ChessPlayer PlayerWhite { get; set; }
+        public ChessPlayer PlayerBlack {get; set;}
 
         float lastMoveMadeTime;
         bool isWaitingToPlayMove;
@@ -61,6 +63,15 @@ namespace ChessChallenge.Application
         readonly MoveGenerator moveGenerator;
         readonly StringBuilder pgns;
 
+        public int bot1_index = 0; // Human
+        public int bot2_index = 1; // MyBot
+
+        public bool dropdownOpen_bot1 = false;
+        public bool dropdownOpen_bot2 = false;
+
+        int totalMovesPlayed = 0;
+        public int trueTotalMovesPlayed = 0;
+
         public ChallengeController()
         {
             Log($"Launching Chess-Challenge version {Settings.Version}");
@@ -76,7 +87,7 @@ namespace ChessChallenge.Application
             BotStatsB = new BotMatchStats("IBot");
             UpdateBotMatchStartFens(defaultFenFile);
             botTaskWaitHandle = new AutoResetEvent(false);
-            StartNewGame(PlayerType.Human, PlayerType.KingGambotIV);
+            StartNewGame(PlayerType.Human, PlayerType.MyBot);
         }
 
         public void UpdateBotMatchStartFens(string fenFile)
@@ -152,6 +163,7 @@ namespace ChessChallenge.Application
 
         Move GetBotMove()
         {
+            totalMovesPlayed++;
             API.Board botBoard = new(board);
             try
             {
@@ -213,7 +225,7 @@ namespace ChessChallenge.Application
             }
         }
 
-        ChessPlayer CreatePlayer(PlayerType type)
+        public ChessPlayer CreatePlayer(PlayerType type)
         {
             return type switch
             {
@@ -292,11 +304,13 @@ namespace ChessChallenge.Application
             }
         }
 
-        void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true)
+        public void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true)
         {
+            trueTotalMovesPlayed += totalMovesPlayed;
+            totalMovesPlayed = 0;
             if (isPlaying)
             {
-                isPlaying = false;
+                isPlaying = false;  // FIXME: fix bug when between games
                 isWaitingToPlayMove = false;
                 gameID = -1;
 

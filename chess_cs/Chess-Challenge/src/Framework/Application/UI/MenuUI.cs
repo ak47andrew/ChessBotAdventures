@@ -2,6 +2,8 @@
 using System.Numerics;
 using System;
 using System.IO;
+using System.Linq;
+using ChessChallenge.Chess;
 
 namespace ChessChallenge.Application
 {
@@ -15,37 +17,57 @@ namespace ChessChallenge.Application
             float breakSpacing = spacing * 0.6f;
 
             // Game Buttons
-            if (NextButtonInRow("Human vs MyBot", ref buttonPos, spacing, buttonSize))
+            if (NextButtonInRow("Play"))
             {
-                var whiteType = controller.HumanWasWhiteLastGame ? ChallengeController.PlayerType.MyBot : ChallengeController.PlayerType.Human;
-                var blackType = !controller.HumanWasWhiteLastGame ? ChallengeController.PlayerType.MyBot : ChallengeController.PlayerType.Human;
-                controller.StartNewGame(whiteType, blackType);
+                if (controller.allBots[controller.bot1_index] == ChallengeController.PlayerType.Human ^ 
+                    controller.allBots[controller.bot2_index] == ChallengeController.PlayerType.Human)
+                {
+                    ChallengeController.PlayerType bot;
+
+                    if (controller.allBots[controller.bot1_index] != ChallengeController.PlayerType.Human){
+                        bot = controller.allBots[controller.bot1_index];
+                    } else {
+                        bot = controller.allBots[controller.bot2_index];
+                    }
+                    
+                    var whiteType = controller.HumanWasWhiteLastGame ? bot : ChallengeController.PlayerType.Human;
+                    var blackType = !controller.HumanWasWhiteLastGame ? bot : ChallengeController.PlayerType.Human;
+                    controller.StartNewGame(whiteType, blackType);
+                } else {
+                    controller.StartNewBotMatch(controller.allBots[controller.bot1_index], controller.allBots[controller.bot2_index]);
+                }
             }
-            if (NextButtonInRow("MyBot vs MyBot", ref buttonPos, spacing, buttonSize))
-            {
-                controller.StartNewBotMatch(ChallengeController.PlayerType.MyBot, ChallengeController.PlayerType.MyBot);
+
+            if (NextButtonInRow("Stop")) {
+                controller.EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
+                // controller.PlayerWhite = controller.CreatePlayer(ChallengeController.PlayerType.Human);
             }
-            if (NextButtonInRow("MyBot vs EvilBot", ref buttonPos, spacing, buttonSize))
-            {
-                controller.StartNewBotMatch(ChallengeController.PlayerType.MyBot, ChallengeController.PlayerType.EvilBot);
-            }
+
+            // if (NextButtonInRow("MyBot vs MyBot"))
+            // {
+            //     controller.StartNewBotMatch(ChallengeController.PlayerType.MyBot, ChallengeController.PlayerType.MyBot);
+            // }
+            // if (NextButtonInRow("MyBot vs EvilBot"))
+            // {
+            //     controller.StartNewBotMatch(ChallengeController.PlayerType.MyBot, ChallengeController.PlayerType.EvilBot);
+            // }
 
             // Fen manager
             buttonPos.Y += breakSpacing;
 
-            if (NextButtonInRow("Fast", ref buttonPos, spacing, buttonSize))
+            if (NextButtonInRow("Fast"))
             {
                 controller.UpdateBotMatchStartFens("Fens fast.txt");
             }
-            if (NextButtonInRow("Half", ref buttonPos, spacing, buttonSize))
+            if (NextButtonInRow("Half"))
             {
                 controller.UpdateBotMatchStartFens("Fens half.txt");
             }
-            if (NextButtonInRow("Full", ref buttonPos, spacing, buttonSize))
+            if (NextButtonInRow("Full"))
             {
                 controller.UpdateBotMatchStartFens("Fens full.txt");
             }
-            if (NextButtonInRow("Test", ref buttonPos, spacing, buttonSize))
+            if (NextButtonInRow("Test"))
             {
                 controller.UpdateBotMatchStartFens("Fens tests.txt");
             }
@@ -53,25 +75,15 @@ namespace ChessChallenge.Application
             // Page buttons
             buttonPos.Y += breakSpacing;
 
-            if (NextButtonInRow("Save Games", ref buttonPos, spacing, buttonSize))
-            {
-                string pgns = controller.AllPGNs;
-                string directoryPath = Path.Combine(FileHelper.AppDataPath, "Games");
-                Directory.CreateDirectory(directoryPath);
-                string fileName = FileHelper.GetUniqueFileName(directoryPath, "games", ".txt");
-                string fullPath = Path.Combine(directoryPath, fileName);
-                File.WriteAllText(fullPath, pgns);
-                ConsoleHelper.Log("Saved games to " + fullPath, false, ConsoleColor.Blue);
-            }
-            if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacing, buttonSize))
+            if (NextButtonInRow("Exit (ESC)"))
             {
                 Environment.Exit(0);
             }
 
-            bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size)
+            bool NextButtonInRow(string name)
             {
-                bool pressed = UIHelper.Button(name, pos, size);
-                pos.Y += spacingY;
+                bool pressed = UIHelper.Button(name, buttonPos, buttonSize);
+                buttonPos.Y += spacing;
                 return pressed;
             }
         }
