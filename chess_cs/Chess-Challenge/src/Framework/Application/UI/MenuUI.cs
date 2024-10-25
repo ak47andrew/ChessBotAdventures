@@ -19,6 +19,8 @@ namespace ChessChallenge.Application
             // Game Buttons
             if (NextButtonInRow("Play"))
             {
+                controller.trueTotalMovesPlayed = 0;
+                controller.totalMovesPlayed = 0;
                 if (controller.allBots[controller.bot1_index] == ChallengeController.PlayerType.Human ^ 
                     controller.allBots[controller.bot2_index] == ChallengeController.PlayerType.Human)
                 {

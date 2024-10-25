@@ -69,7 +69,7 @@ namespace ChessChallenge.Application
         public bool dropdownOpen_bot1 = false;
         public bool dropdownOpen_bot2 = false;
 
-        int totalMovesPlayed = 0;
+        public int totalMovesPlayed = 0;
         public int trueTotalMovesPlayed = 0;
         public bool showDropdowns = true;
 
