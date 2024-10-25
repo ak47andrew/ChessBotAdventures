@@ -34,12 +34,14 @@ namespace ChessChallenge.Application
                     var blackType = !controller.HumanWasWhiteLastGame ? bot : ChallengeController.PlayerType.Human;
                     controller.StartNewGame(whiteType, blackType);
                 } else {
+                    controller.showDropdowns = false;
                     controller.StartNewBotMatch(controller.allBots[controller.bot1_index], controller.allBots[controller.bot2_index]);
                 }
             }
 
             if (NextButtonInRow("Stop")) {
                 controller.EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
+                controller.showDropdowns = true;
                 // controller.PlayerWhite = controller.CreatePlayer(ChallengeController.PlayerType.Human);
             }
 

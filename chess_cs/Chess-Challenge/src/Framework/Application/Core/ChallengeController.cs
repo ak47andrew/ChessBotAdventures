@@ -71,6 +71,7 @@ namespace ChessChallenge.Application
 
         int totalMovesPlayed = 0;
         public int trueTotalMovesPlayed = 0;
+        public bool showDropdowns = true;
 
         public ChallengeController()
         {
@@ -310,7 +311,7 @@ namespace ChessChallenge.Application
             totalMovesPlayed = 0;
             if (isPlaying)
             {
-                isPlaying = false;  // FIXME: fix bug when between games
+                isPlaying = false;
                 isWaitingToPlayMove = false;
                 gameID = -1;
 

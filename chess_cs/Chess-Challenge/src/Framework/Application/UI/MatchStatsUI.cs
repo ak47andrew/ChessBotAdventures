@@ -9,7 +9,7 @@ namespace ChessChallenge.Application
     {
         public static void DrawMatchStats(ChallengeController controller)
         {
-            if (controller.isPlaying &&  !(controller.PlayerWhite.IsHuman ^ controller.PlayerBlack.IsHuman))
+            if (!controller.showDropdowns)
             {
                 int nameFontSize = UIHelper.ScaleInt(40);
                 int regularFontSize = UIHelper.ScaleInt(35);
