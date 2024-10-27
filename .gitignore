@@ -688,3 +688,5 @@ _NCrunch*
 
 python_games/*.pgn
 file.txt
+chess.db
+test.py

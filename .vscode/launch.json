@@ -5,17 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "UCI",
+            "name": "C#: GUI",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/chess_cs/Chess-Challenge/Chess-Challenge.csproj"
+        },
+        {
+            "name": "C#: UCI",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/chess_cs/Chess-Challenge/bin/Debug/net6.0/Chess-Challenge.dll",
-            "args": ["uci", "KingGambotIV"],
+            "args": [
+                "uci",
+                "MyBot"
+            ],
             "cwd": "${workspaceFolder}/chess_cs",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
         {
-            "name": "Python UCI",
+            "name": "Python: UCI",
             "type": "debugpy",
             "request": "launch",
             "program": "tournament.py",
@@ -23,12 +32,12 @@
             "cwd": "${workspaceFolder}/python_games"
         },
         {
-            "name": "GUI",
-            "type": "dotnet",
+            "name": "Python: Test",
+            "type": "debugpy",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/chess_cs/Chess-Challenge/Chess-Challenge.csproj"
-        }
-        // UCI
-        // Python
+            "program": "test.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/python_games"
+        },
     ]
 }

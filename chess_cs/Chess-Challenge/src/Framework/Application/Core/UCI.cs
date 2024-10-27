@@ -115,7 +115,7 @@ namespace ChessChallenge.UCI
             }
         }
 
-        public void Run()
+        public void Run()  // TODO add more uci capabilities
         {
             while (true)
             {

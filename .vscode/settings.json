@@ -2,5 +2,6 @@
     "python.analysis.typeCheckingMode": "basic",
     "material-icon-theme.folders.associations": {
         "Bots": "Robot"
-    }
+    },
+    "python.analysis.autoImportCompletions": true
 }
