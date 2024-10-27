@@ -8,18 +8,18 @@
             "name": "C#: GUI",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/chess_cs/Chess-Challenge/Chess-Challenge.csproj"
+            "projectPath": "${workspaceFolder}/core/Chess-Challenge/Chess-Challenge.csproj"
         },
         {
             "name": "C#: UCI",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/chess_cs/Chess-Challenge/bin/Debug/net6.0/Chess-Challenge.dll",
+            "program": "${workspaceFolder}/core/Chess-Challenge/bin/Debug/net6.0/Chess-Challenge.dll",
             "args": [
                 "uci",
                 "MyBot"
             ],
-            "cwd": "${workspaceFolder}/chess_cs",
+            "cwd": "${workspaceFolder}/core",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -29,7 +29,7 @@
             "request": "launch",
             "program": "tournament.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/python_games"
+            "cwd": "${workspaceFolder}/python"
         },
         {
             "name": "Python: Test",
@@ -37,7 +37,7 @@
             "request": "launch",
             "program": "test.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/python_games"
+            "cwd": "${workspaceFolder}/python"
         },
     ]
 }
