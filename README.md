@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 3. Generate database schema
 ```bash
-python tournament.py
+python config.py database init
 ```
 
 4. Fill up the engine info
