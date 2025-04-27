@@ -35,9 +35,14 @@
             "name": "Python: Test",
             "type": "debugpy",
             "request": "launch",
-            "program": "test.py",
+            "program": "config.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/python"
+            "cwd": "${workspaceFolder}/python",
+            "args": [
+                "database",
+                "init",
+                "--force"
+            ]
         },
     ]
 }

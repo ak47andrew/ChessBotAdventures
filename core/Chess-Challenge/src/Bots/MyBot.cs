@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ChessChallenge.API;
 
 namespace ChessChallenge.Bots;
@@ -8,9 +9,9 @@ public class MyBot : IChessBot
     public class MoveEval
     {
         public Move move;
-        public float eval;
+        public int eval;
 
-        public MoveEval(Move move, float eval)
+        public MoveEval(Move move, int eval)
         {
             this.move = move;
             this.eval = eval;
@@ -21,73 +22,88 @@ public class MyBot : IChessBot
 
     public Move Think(Board board, Timer timer)
     {
-        return Search(board, 4);
+        var m = Search(board, 4);
+        Console.WriteLine("------");
+        return m;
     }
 
-    public Move Search(Board board, int depth){
+    public Move Search(Board board, int depth)
+    {
         MoveEval? moveEval = null;
+        var moves = board.GetLegalMoves().OrderBy(_ => rnd.Next()).ToArray();
 
-        foreach (var move in board.GetLegalMoves())
+        foreach (var move in moves)
         {
             board.MakeMove(move);
-            float eval = -DeepSearch(board, depth - 1);
-            if (
-                moveEval == null || // If first accurance 
-                (board.IsWhiteToMove && eval >= moveEval.eval) || // Or more, if playing white 
-                (!board.IsWhiteToMove && eval <= moveEval.eval)) // Or less, if playing black
-            {
-                moveEval = new MoveEval(move, eval); // update the move
-            }
+            int eval = -DeepSearch(board, depth - 1);
+            Console.WriteLine($"{move} -> {eval}");
+            bool update = moveEval == null || eval >= moveEval.eval;
+
+            if (update)
+                moveEval = new MoveEval(move, eval);
+
             board.UndoMove(move);
         }
-        return moveEval.move;
+        return moveEval?.move ?? moves[0];
     }
 
-    public float DeepSearch(Board board, int depth){
-        if (depth == 0) {
-            return Evaluate(board);
-        }
+    public int DeepSearch(Board board, int depth)
+    {
+        var moves = board.GetLegalMoves().OrderBy(_ => rnd.Next()).ToArray();
 
-        float bestEval = board.IsWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity;
-        foreach (var move in board.GetLegalMoves())
+        if (depth == 0 || moves.Length == 0)
+            return Evaluate(board); // Corrected: Removed negation here
+
+        int bestEval = int.MinValue;
+
+        foreach (var move in moves)
         {
             board.MakeMove(move);
-            float eval = DeepSearch(board, depth - 1);
+            int eval = -DeepSearch(board, depth - 1);
             board.UndoMove(move);
-            if (board.IsWhiteToMove)
-            {
-                bestEval = Math.Max(bestEval, eval);
-            } else {
-                bestEval = Math.Min(bestEval, eval);
-            }
+
+            if (eval > bestEval)
+                bestEval = eval;
         }
         return bestEval;
     }
 
-    public float Evaluate(Board board) {
-        float eval = 0f;
+    public int Evaluate(Board board)
+    {
+        if (board.IsInCheckmate())
+        {
+            // Return very low score for checkmated player
+            int mateScore = -1000000 + 1000 * board.PlyCount;
+            return mateScore;
+        }
 
+        if (board.IsDraw())
+            return 0;
+
+        int eval = 0;
         foreach (var pieceList in board.GetAllPieceLists())
         {
-            eval += PieceValue(pieceList.TypeOfPieceInList) * pieceList.Count * (pieceList.IsWhitePieceList ? 1f : -1f);
+            // Corrected sign calculation: == instead of !=
+            int sign = pieceList.IsWhitePieceList == board.IsWhiteToMove ? 1 : -1;
+            eval += PieceValue(pieceList.TypeOfPieceInList) * pieceList.Count * sign;
         }
 
-        if (board.IsInCheckmate()) {
-            eval = float.PositiveInfinity * (board.IsWhiteToMove ? -1f : 1f);
-        }
+        if (board.IsInCheck())
+            eval -= 50;
 
         return eval;
     }
 
-    private int PieceValue(PieceType piece) {
-        switch (piece)
+    private static int PieceValue(PieceType piece)
+    {
+        return piece switch
         {
-            case PieceType.Pawn: return 100;
-            case PieceType.Knight: return 300;
-            case PieceType.Bishop: return 310;
-            case PieceType.Rook: return 500;
-            case PieceType.Queen: return 900;
-            default: return 0;
-        }
+            PieceType.Pawn => 100,
+            PieceType.Knight => 300,
+            PieceType.Bishop => 300,
+            PieceType.Rook => 500,
+            PieceType.Queen => 900,
+            _ => 0,
+        };
     }
 }

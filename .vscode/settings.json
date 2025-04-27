@@ -3,5 +3,11 @@
     "material-icon-theme.folders.associations": {
         "Bots": "Robot"
     },
-    "python.analysis.autoImportCompletions": true
+    "python.analysis.autoImportCompletions": true,
+    "files.exclude": {
+        "**/*.rpyc": true,
+        "**/*.rpa": true,
+        "**/*.rpymc": true,
+        "**/cache/": true
+    }
 }

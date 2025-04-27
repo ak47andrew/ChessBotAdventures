@@ -8,7 +8,6 @@ public class lowEloBrain : IChessBot
     bool isfirstMove = true;
     bool hasCastled = false;
     Move lastLastMove = Move.NullMove;
-    bool simplify = false;
     int gameMoves = 0;
     int llc = 0;
     ChessChallenge.API.PieceType lastMovedPiece = PieceType.Knight;
@@ -19,7 +18,6 @@ public class lowEloBrain : IChessBot
         Move bestMove = moves[0];
         double cBestMoveRating = 0;
         bool willBe50Move = false;
-        bool isCaptureInCycle = false;
 
         foreach (Move move in moves)
         {

@@ -10,7 +10,6 @@ public class LordChesterofPly5 : IChessBot
     int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
     const int depth = 4;
     bool AreWhite;
-    int N = 2;
     public Move Think(Board board, Timer timer)
     {
 
@@ -20,7 +19,6 @@ public class LordChesterofPly5 : IChessBot
         int SearchedPositions = 0;
         int EvaluatedPositions = 0;
         int Pruned = 0;
-        int RazorPruned = 0;
         int IterativeDepth = 0;
         float CurrentEval = Evaluate();
 
