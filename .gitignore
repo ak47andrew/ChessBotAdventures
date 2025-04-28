@@ -690,3 +690,4 @@ python_games/*.pgn
 file.txt
 chess.db
 test.py
+*.code-workspace
