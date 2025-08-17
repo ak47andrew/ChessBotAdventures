@@ -19,6 +19,7 @@ namespace ChessChallenge.Application
         {
             Human,
             MyBot,
+            MyPrevBot,
             EvilBot,
             HopeBot,
             Igris,
@@ -28,7 +29,7 @@ namespace ChessChallenge.Application
             MaxMaxBot
         }
 
-        public PlayerType[] allBots = {PlayerType.Human, PlayerType.MyBot, PlayerType.EvilBot, PlayerType.HopeBot, PlayerType.Igris, 
+        public PlayerType[] allBots = {PlayerType.Human, PlayerType.MyBot, PlayerType.MyPrevBot, PlayerType.EvilBot, PlayerType.HopeBot, PlayerType.Igris, 
                                         PlayerType.KingGambotIV, PlayerType.LordChesterofPly5, PlayerType.lowEloBrain, PlayerType.MaxMaxBot};
         // Game state
         readonly Random rng;
@@ -231,6 +232,7 @@ namespace ChessChallenge.Application
             return type switch
             {
                 PlayerType.MyBot => new ChessPlayer(new MyBot(), type, GameDurationMilliseconds),
+                PlayerType.MyPrevBot => new ChessPlayer(new MyPreviousBot(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.HopeBot => new ChessPlayer(new HopeBot(), type, GameDurationMilliseconds),
                 PlayerType.Igris => new ChessPlayer(new Igris(), type, GameDurationMilliseconds),
@@ -246,6 +248,7 @@ namespace ChessChallenge.Application
             return type switch
             {
                 PlayerType.MyBot => new MyBot(),
+                PlayerType.MyPrevBot => new MyPreviousBot(),
                 PlayerType.EvilBot => new EvilBot(),
                 PlayerType.HopeBot => new HopeBot(),
                 PlayerType.Igris => new Igris(),

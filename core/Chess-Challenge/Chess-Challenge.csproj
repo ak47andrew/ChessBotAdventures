@@ -53,6 +53,9 @@
     <None Update="resources\Fonts\sdf.fs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\Openings.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\Pieces.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

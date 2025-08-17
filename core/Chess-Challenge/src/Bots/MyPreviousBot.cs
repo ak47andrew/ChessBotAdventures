@@ -6,17 +6,17 @@ using System.Collections.Generic;
 
 namespace ChessChallenge.Bots;
 
-enum GamePhase
+enum PrevGamePhase
 {
     Opening,
     Midgame,
     Endgame
 }
 
-public class MyBot : IChessBot
+public class MyPreviousBot : IChessBot
 {
     private const int MATE_SCORE = 100000;
-    private const int INFINITY = 1000000;
+    private const int INFINITY = 1000000;    
 
     private static readonly Dictionary<PieceType, int> PieceValues = new Dictionary<PieceType, int>
     {
@@ -46,14 +46,13 @@ public class MyBot : IChessBot
 
     public Move Think(Board board, Timer timer)
     {
-        GamePhase gamePhase = GetGamePhase(board);
-        float timeleft = CalculateTimeLimit(timer, gamePhase, board.PlyCount);
+        float timeleft = CalculateTimeLimit(timer, GetGamePhase(board), board.PlyCount);
         if (timeleft <= 150)
         {
             Move[] moves = board.GetLegalMoves();
             return moves[random.Next(moves.Length)];
         }
-        Console.WriteLine($"info string Starting search with {timeleft / 1000}s search time");
+        Console.WriteLine($"Starting search with {timeleft / 1000}s search time");
         bestMove = Move.NullMove;
         isTimeOut = false;
         nodeCount = 0;
@@ -67,15 +66,17 @@ public class MyBot : IChessBot
             }
             if (isTimeOut)
             {
+                Console.WriteLine($"Time out. Playing {move}");
                 return !move.IsNull ? move : board.GetLegalMoves()[0];
             }
             Console.WriteLine($"info depth {depth} time {timer.MillisecondsElapsedThisTurn} score cp {eval} nodes {nodeCount} nps {(nodeCount / Math.Max(0.0001f, timer.MillisecondsElapsedThisTurn / 1000)).ToString("F0", CultureInfo.InvariantCulture)} pv {move}");
             bestMove = move;
+            // Console.WriteLine($"Depth: {depth}, Move: {move}, Eval: {eval}, time left: {(timeleft - timer.MillisecondsElapsedThisTurn) / 1000}s");
             depth++;
         }
     }
 
-    float CalculateTimeLimit(Timer timer, GamePhase gamePhase, int ply)
+    float CalculateTimeLimit(Timer timer, PrevGamePhase gamePhase, int ply)
     {
         float timeleft = timer.MillisecondsRemaining;
         if (timeleft <= safetyMargin)
@@ -88,7 +89,7 @@ public class MyBot : IChessBot
         }
 
         int movesLeft;
-        if (gamePhase == GamePhase.Endgame)
+        if (gamePhase == PrevGamePhase.Endgame)
         {
             movesLeft = Math.Max(2, Math.Min(20, (int)Math.Round(timeleft / 5.0)));
         }
@@ -201,33 +202,33 @@ public class MyBot : IChessBot
     private int Evaluate(Board board)
     {
         int score = 0;
-    
-        foreach (PieceList pl in board.GetAllPieceLists())
+
+        // Material evaluation
+        foreach (PieceList pieceList in board.GetAllPieceLists())
         {
-            foreach (Piece p in pl)
-            {
-                int sign = p.IsWhite == board.IsWhiteToMove ? 1 : -1;
-
-                // Material evaluation
-                score += PieceValues[p.PieceType] * sign;
-
-                switch (p.PieceType)
-                {
-                    case PieceType.Pawn:
-                        int rank = p.Square.Rank;
-                        score += sign * (p.IsWhite ? rank : 7 - rank);
-                        break;
-                    case PieceType.King:
-                        score -= 10 * board.GetLegalMoves().Where(move => move.StartSquare == p.Square).Count();
-                        break;
-                }
-            }
+            int sign = pieceList.IsWhitePieceList == board.IsWhiteToMove ? 1 : -1;
+            score += PieceValues[pieceList.TypeOfPieceInList] * pieceList.Count * sign;
         }
-    
+
+        // Pawn positional evaluation
+        List<Piece> pawns = board.GetPieceList(PieceType.Pawn, true).ToList();
+        pawns.AddRange(board.GetPieceList(PieceType.Pawn, false).ToList());
+        foreach (Piece pawn in pawns)
+        {
+            int sign = pawn.IsWhite == board.IsWhiteToMove ? 1 : -1;
+            int rank = pawn.Square.Rank;
+
+            // Adjust for player perspective
+            if (pawn.IsWhite)
+                score += sign * rank;       // White pawns advance upward
+            else
+                score += sign * (7 - rank); // Black pawns advance downward
+        }
+
         // Penalty for being in check
         if (board.IsInCheck())
             score -= 50;
-    
+
         return score;
     }
 
@@ -268,22 +269,22 @@ public class MyBot : IChessBot
         return totalMaterial;
     }
 
-    private GamePhase GetGamePhase(Board board)
+    private PrevGamePhase GetGamePhase(Board board)
     {
         int materialPhase = GetMaterialPhase(board);
         int ply = board.PlyCount;
 
         if (materialPhase < 13)
         {
-            return GamePhase.Endgame;
+            return PrevGamePhase.Endgame;
         }
         else if (materialPhase > 15 && ply < 15)
         {
-            return GamePhase.Opening;
+            return PrevGamePhase.Opening;
         }
         else
         {
-            return GamePhase.Midgame;
+            return PrevGamePhase.Midgame;
         }
     }
 }
