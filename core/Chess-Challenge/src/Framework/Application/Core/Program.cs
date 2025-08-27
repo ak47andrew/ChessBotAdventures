@@ -15,7 +15,7 @@ namespace ChessChallenge.Application
 
         public static void Main(string[] args)
         {
-            if (args.Length > 1 && args[0] == "uci"){
+            if ((args.Length > 1 && args[0] == "uci") || (args.Length > 0 && args[0].StartsWith("--uci"))){
                 StartUCI(args);
                 return;
             }
@@ -114,7 +114,25 @@ namespace ChessChallenge.Application
         public static void StartUCI(string[] args)
         {
             ChallengeController.PlayerType player;
-            bool success = Enum.TryParse(args[1], out player);
+            string playerType = "";
+
+            if (args.Length == 1)
+            {
+                // Meaning format is `--uci=<playerType>`
+                playerType = args[0].Substring("--uci=".Length);
+            }
+            else if (args.Length == 2)
+            {
+                // Meaning format is `uci <playerType>`
+                playerType = args[1];
+            }
+            else
+            {
+                Console.Error.WriteLine("Invalid arguments for UCI mode. Expected '--uci=<playerType>' or 'uci <playerType>'");
+                return;
+            }
+
+            bool success = Enum.TryParse(playerType, out player);
 
             if (!success)
             {

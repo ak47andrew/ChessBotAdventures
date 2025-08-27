@@ -201,7 +201,9 @@ public class MyBot : IChessBot
     private int Evaluate(Board board)
     {
         int score = 0;
-    
+
+        GamePhase gamePhase = GetGamePhase(board);
+
         foreach (PieceList pl in board.GetAllPieceLists())
         {
             foreach (Piece p in pl)
@@ -218,16 +220,23 @@ public class MyBot : IChessBot
                         score += sign * (p.IsWhite ? rank : 7 - rank);
                         break;
                     case PieceType.King:
-                        score -= 10 * board.GetLegalMoves().Where(move => move.StartSquare == p.Square).Count();
+                        if (gamePhase != GamePhase.Endgame)
+                        {
+                            score -= 10 * board.GetLegalMoves().Where(move => move.StartSquare == p.Square).Count();
+                        }
                         break;
                 }
             }
         }
-    
+
         // Penalty for being in check
         if (board.IsInCheck())
             score -= 50;
-    
+
+        score += CastlingScore(board);
+
+        score += (int)Math.Round(Math.Pow(board.GetLegalMoves().Count(), (double)2 / 3) * 5);
+
         return score;
     }
 
@@ -286,4 +295,21 @@ public class MyBot : IChessBot
             return GamePhase.Midgame;
         }
     }
+
+    public int CastlingScore(Board board)
+    {
+        int score = 0;
+
+        foreach (var item in board.GameMoveHistory)
+        {
+            if (item.IsCastles)
+            {
+                score += 70 * item.StartSquare.Rank == 0 && board.IsWhiteToMove ? 1 : -1;
+            }
+        }
+
+        return score;
+    }
+
+    
 }
