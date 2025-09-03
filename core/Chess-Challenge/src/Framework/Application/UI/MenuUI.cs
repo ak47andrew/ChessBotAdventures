@@ -41,9 +41,11 @@ namespace ChessChallenge.Application
                 }
             }
 
-            if (NextButtonInRow("Stop")) {
+            if (NextButtonInRow("Stop"))
+            {
                 controller.EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
                 controller.showDropdowns = true;
+                controller.SavePGNs();
                 // controller.PlayerWhite = controller.CreatePlayer(ChallengeController.PlayerType.Human);
             }
 
@@ -81,6 +83,7 @@ namespace ChessChallenge.Application
 
             if (NextButtonInRow("Exit (ESC)"))
             {
+                controller.SavePGNs();
                 Environment.Exit(0);
             }
 

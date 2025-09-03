@@ -55,6 +55,8 @@ namespace ChessChallenge.Application
                 Raylib.EndDrawing();
             }
 
+            controller.SavePGNs();
+
             Raylib.CloseWindow();
 
             controller.Release();

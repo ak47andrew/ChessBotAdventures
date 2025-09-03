@@ -347,16 +347,21 @@ namespace ChessChallenge.Application
                     else if (autoStartNextBotMatch)
                     {
                         Log("Match finished", false, ConsoleColor.Blue);
-                        string pgns = AllPGNs;
-                        string directoryPath = Path.Combine(FileHelper.AppDataPath, "Games");
-                        Directory.CreateDirectory(directoryPath);
-                        string fileName = FileHelper.GetUniqueFileName(directoryPath, "games", ".txt");
-                        string fullPath = Path.Combine(directoryPath, fileName);
-                        File.WriteAllText(fullPath, pgns);
-                        Log("Saved games to " + fullPath, false, ConsoleColor.Blue);
+                        SavePGNs();
                     }
                 }
             }
+        }
+
+        public void SavePGNs()
+        {
+            string pgns = AllPGNs;
+            string directoryPath = Path.Combine(FileHelper.AppDataPath, "Games");
+            Directory.CreateDirectory(directoryPath);
+            string fileName = FileHelper.GetUniqueFileName(directoryPath, "games", ".txt");
+            string fullPath = Path.Combine(directoryPath, fileName);
+            File.WriteAllText(fullPath, pgns);
+            Log("Saved games to " + fullPath, false, ConsoleColor.Blue);
         }
 
         private void AutoStartNextBotMatchGame(int originalGameID, System.Timers.Timer timer)

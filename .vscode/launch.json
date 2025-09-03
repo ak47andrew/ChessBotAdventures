@@ -44,5 +44,13 @@
                 "--force"
             ]
         },
+        {
+            "name": "Python: Matrix generator",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "matrix_generator.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/python"
+        },
     ]
 }

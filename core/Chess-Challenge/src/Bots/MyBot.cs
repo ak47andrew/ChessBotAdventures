@@ -43,6 +43,92 @@ public class MyBot : IChessBot
     private static Random random = new Random();
     private Move bestMove;
     private int nodeCount;
+    private Dictionary<(PieceType, bool), int[]> mobilityBonus = new Dictionary<(PieceType, bool), int[]>();
+
+    public MyBot()
+    {
+        Console.WriteLine("Initializing MyBot...");
+        int[,] mobilityPawns = new int[8, 8]
+        {
+            {  0,  0,  0,  0,  0,  0,  0,  0 },
+            { 60, 60, 60, 60, 60, 60, 60, 60 },
+            { 50, 50, 50, 50, 50, 50, 50, 50 },
+            { 40, 40, 40, 40, 40, 40, 40, 40 },
+            { 30, 30, 30, 30, 30, 30, 30, 30 },
+            { 20, 20, 20, 20, 20, 20, 20, 20 },
+            { 35, 35, 35, 10, 10, 35, 35, 35 },
+            {  0,  0,  0,  0,  0,  0,  0,  0 }
+        };
+        int[,] mobilityKnights = new int[8, 8]
+        {
+            {  -15,  -10,  -10,  -10,  -10,  -10,  -10,  -15 },
+            {  -10,    5,   10,   10,   10,   10,    5,  -10 },
+            {  -10,   10,   20,   20,   20,   20,   10,  -10 },
+            {  -10,   10,   20,   35,   35,   20,   10,  -10 },
+            {  -10,   10,   20,   35,   35,   20,   10,  -10 },
+            {  -10,   10,   20,   20,   20,   20,   10,  -10 },
+            {  -10,    5,   10,   10,   10,   10,    5,  -10 },
+            {  -15,    0,  -10,  -10,  -10,  -10,    0,  -15 }
+        };
+        int[,] mobilityBishops = new int[8, 8]
+        {
+            {  -15,  -10,  -10,  -10,  -10,  -10,  -10,  -15 },
+            {  -10,    5,   10,   10,   10,   10,    5,  -10 },
+            {  -10,   10,   20,   20,   20,   20,   10,  -10 },
+            {  -10,   10,   20,   30,   30,   20,   10,  -10 },
+            {  -10,   10,   20,   30,   30,   20,   10,  -10 },
+            {  -10,   10,   20,   20,   20,   20,   10,  -10 },
+            {  -10,   15,   10,   20,   20,   10,   15,  -10 },
+            {  -15,  -10,    0,  -10,  -10,    0,  -10,  -15 }
+        };
+        int[,] mobilityRooks = new int[8, 8]
+        {
+            {  -15,  -10,   -5,   -5,   -5,   -5,  -10,  -15 },
+            {  -10,    0,    0,    0,    0,    0,    0,  -10 },
+            {   -5,    0,   10,   10,   10,   10,    0,   -5 },
+            {   -5,    0,   10,   20,   20,   10,    0,   -5 },
+            {   -5,    0,   10,   20,   20,   10,    0,   -5 },
+            {   -5,    0,   10,   10,   10,   10,    0,   -5 },
+            {  -10,    0,    0,    5,    5,    0,    0,  -10 },
+            {  -15,  -10,   -5,   -5,   -5,   -5,  -10,  -15 }
+        };
+
+        int[,] mobilityQueen = new int[8, 8]
+        {
+            {  -15,  -10,  -10,    0,    0,  -10,  -10,  -15 },
+            {  -10,    0,    0,    0,    0,    0,    0,  -10 },
+            {  -10,    0,   10,   10,   10,   10,    0,  -10 },
+            {   -5,    0,   10,   20,   20,   10,    0,   -5 },
+            {   -5,    0,   10,   20,   20,   10,    0,   -5 },
+            {  -10,    0,   10,   10,   10,   10,    0,  -10 },
+            {  -10,    0,    0,    5,    5,    0,    0,  -10 },
+            {  -15,  -10,  -10,    0,    0,  -10,  -10,  -15 }
+        };
+        int[,] mobilityKing = new int[8, 8]
+        {
+            {  -50,  -50,  -50,  -50,  -50,  -50,  -50,  -50 },
+            {  -50,  -50,  -50,  -50,  -50,  -50,  -50,  -50 },
+            {  -30,  -30,  -30,  -30,  -30,  -30,  -30,  -30 },
+            {  -20,  -20,  -20,  -20,  -20,  -20,  -20,  -20 },
+            {  -10,  -10,  -10,  -10,  -10,  -10,  -10,  -10 },
+            {   -5,   -5,   -5,   -5,   -5,   -5,   -5,   -5 },
+            {    5,    5,    5,    5,    5,    5,    5,    5 },
+            {   40,   40,   40,   10,   10,   40,   40,   40 }
+        };
+
+        mobilityBonus[(PieceType.Pawn, true)] = Flatten2DArray(mobilityPawns);
+        mobilityBonus[(PieceType.Pawn, false)] = Flatten2DArray(Rotate180(mobilityPawns));
+        mobilityBonus[(PieceType.Knight, true)] = Flatten2DArray(mobilityKnights);
+        mobilityBonus[(PieceType.Knight, false)] = Flatten2DArray(Rotate180(mobilityKnights));
+        mobilityBonus[(PieceType.Bishop, true)] = Flatten2DArray(mobilityBishops);
+        mobilityBonus[(PieceType.Bishop, false)] = Flatten2DArray(Rotate180(mobilityBishops));
+        mobilityBonus[(PieceType.Rook, true)] = Flatten2DArray(mobilityRooks);
+        mobilityBonus[(PieceType.Rook, false)] = Flatten2DArray(Rotate180(mobilityRooks));
+        mobilityBonus[(PieceType.Queen, true)] = Flatten2DArray(mobilityQueen);
+        mobilityBonus[(PieceType.Queen, false)] = Flatten2DArray(Rotate180(mobilityQueen));
+        mobilityBonus[(PieceType.King, true)] = Flatten2DArray(mobilityKing);
+        mobilityBonus[(PieceType.King, false)] = Flatten2DArray(Rotate180(mobilityKing));
+    }
 
     public Move Think(Board board, Timer timer)
     {
@@ -212,28 +298,29 @@ public class MyBot : IChessBot
 
                 // Material evaluation
                 score += PieceValues[p.PieceType] * sign;
-
-                switch (p.PieceType)
-                {
-                    case PieceType.Pawn:
-                        int rank = p.Square.Rank;
-                        score += sign * (p.IsWhite ? rank : 7 - rank);
-                        break;
-                    case PieceType.King:
-                        if (gamePhase != GamePhase.Endgame)
-                        {
-                            score -= 10 * board.GetLegalMoves().Where(move => move.StartSquare == p.Square).Count();
-                        }
-                        break;
+                if (!(p.PieceType == PieceType.King && gamePhase == GamePhase.Endgame)) {                
+                    score += mobilityBonus[(p.PieceType, p.IsWhite)][p.Square.Index] * sign;
                 }
+
+                // switch (p.PieceType)
+                // {
+                //     case PieceType.Pawn:
+                //         int rank = p.Square.Rank;
+                //         score += sign * (p.IsWhite ? rank : 7 - rank);
+                //         break;
+                //     case PieceType.King:
+                //         if (gamePhase != GamePhase.Endgame)
+                //         {
+                //             score -= 10 * board.GetLegalMoves().Where(move => move.StartSquare == p.Square).Count();
+                //         }
+                //         break;
+                // }
             }
         }
 
         // Penalty for being in check
         if (board.IsInCheck())
             score -= 50;
-
-        score += CastlingScore(board);
 
         score += (int)Math.Round(Math.Pow(board.GetLegalMoves().Count(), (double)2 / 3) * 5);
 
@@ -296,20 +383,36 @@ public class MyBot : IChessBot
         }
     }
 
-    public int CastlingScore(Board board)
+    public static int[,] Rotate180(int[,] matrix)
     {
-        int score = 0;
+        int n = matrix.GetLength(0);
+        int[,] result = new int[n, n];
 
-        foreach (var item in board.GameMoveHistory)
+        for (int i = 0; i < n; i++)
         {
-            if (item.IsCastles)
+            for (int j = 0; j < n; j++)
             {
-                score += 70 * item.StartSquare.Rank == 0 && board.IsWhiteToMove ? 1 : -1;
+                result[i, j] = matrix[n - 1 - i, n - 1 - j];
             }
         }
 
-        return score;
+        return result;
     }
 
-    
+    public static int[] Flatten2DArray(int[,] array2D)
+    {
+        int rows = array2D.GetLength(0);
+        int cols = array2D.GetLength(1);
+        int[] array1D = new int[rows * cols];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                array1D[i * cols + j] = array2D[i, j];
+            }
+        }
+
+        return array1D;
+    }
 }

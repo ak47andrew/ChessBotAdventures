@@ -101,7 +101,7 @@ namespace ChessChallenge.UCI
                     Log("uciok");
                     break;
                 case "ucinewgame":
-                    bot = ChallengeController.CreateBot(type);
+                    bot = ChallengeController.CreateBot(type) ?? bot;
                     break;
                 case "position":
                     PositionCommand(tokens);
@@ -119,7 +119,7 @@ namespace ChessChallenge.UCI
         {
             while (true)
             {
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? "";
                 Log(line, false);
 
                 if (line == "quit" || line == "exit")
