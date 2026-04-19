@@ -16,7 +16,7 @@ enum GamePhase
 public class MyBot : IChessBot
 {
     private const int MATE_SCORE = 100000;
-    private const int INFINITY = 1000000;
+    private const int INFINITY = int.MaxValue;
 
     private static readonly Dictionary<PieceType, int> PieceValues = new Dictionary<PieceType, int>
     {
@@ -25,7 +25,7 @@ public class MyBot : IChessBot
         {PieceType.Bishop, 330},
         {PieceType.Rook, 500},
         {PieceType.Queen, 900},
-        {PieceType.King, 20000},
+        {PieceType.King, 0},
         {PieceType.None, 0}
     };
     private static readonly Dictionary<PieceType, int> PieceValuesPhase = new Dictionary<PieceType, int>
@@ -43,7 +43,7 @@ public class MyBot : IChessBot
     private static Random random = new Random();
     private Move bestMove;
     private int nodeCount;
-    private Dictionary<(PieceType, bool), int[]> mobilityBonus = new Dictionary<(PieceType, bool), int[]>();
+    private Dictionary<(PieceType, bool), int[]> mobilityBonus = new();
 
     public MyBot()
     {
@@ -168,7 +168,7 @@ public class MyBot : IChessBot
         {
             return 0;
         }
-        else if (timeleft <= 2 * safetyMargin)
+        if (timeleft <= 2 * safetyMargin)
         {
             return timeleft - safetyMargin;
         }
@@ -301,20 +301,6 @@ public class MyBot : IChessBot
                 if (!(p.PieceType == PieceType.King && gamePhase == GamePhase.Endgame)) {                
                     score += mobilityBonus[(p.PieceType, p.IsWhite)][p.Square.Index] * sign;
                 }
-
-                // switch (p.PieceType)
-                // {
-                //     case PieceType.Pawn:
-                //         int rank = p.Square.Rank;
-                //         score += sign * (p.IsWhite ? rank : 7 - rank);
-                //         break;
-                //     case PieceType.King:
-                //         if (gamePhase != GamePhase.Endgame)
-                //         {
-                //             score -= 10 * board.GetLegalMoves().Where(move => move.StartSquare == p.Square).Count();
-                //         }
-                //         break;
-                // }
             }
         }
 

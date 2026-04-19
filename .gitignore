@@ -691,3 +691,5 @@ file.txt
 chess.db
 test.py
 *.code-workspace
+.idea/
+qodana.yaml
